@@ -1,0 +1,55 @@
+<androidx.appcompat.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@android:color/white"
+    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    android:elevation="4dp"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/pageTitle"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_centerVertical="true"/>
+
+        <ImageView
+            android:id="@+id/fb_ic"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/fb"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            android:layout_marginRight="20dp"/>
+
+        <ImageView
+            android:id="@+id/google_ic"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/google"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/fb_ic"
+            android:visibility="gone"
+            android:layout_marginRight="20dp"/>
+        <Spinner
+            android:id="@+id/usage_spinner"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
+
+</androidx.appcompat.widget.Toolbar>

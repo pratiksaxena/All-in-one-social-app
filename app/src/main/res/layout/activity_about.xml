@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.AboutActivity"
+    android:background="@android:color/white">
+
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbarTop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"/>
+
+    <RelativeLayout
+        android:layout_below="@id/toolbarTop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F5F5F5">
+
+        <ImageView
+            android:id="@+id/messenger"
+            android:layout_marginTop="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/logo"/>
+
+        <TextView
+            android:id="@+id/messenger_title"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/messenger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:layout_centerHorizontal="true"
+            android:text="Text Messenger App"/>
+
+        <LinearLayout
+            android:id="@+id/sec_1"
+            android:layout_marginTop="20dp"
+            android:layout_below="@id/messenger_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@android:color/white"
+            android:visibility="gone"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/feed"/>
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Join Beta Group"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_marginTop="3dp"
+                android:layout_width="match_parent"
+                android:layout_height=".5dp"
+                android:background="#D3D3D3"
+                android:layout_marginBottom="3dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/feed"/>
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Features Survey"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/sec_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@android:color/white"
+            android:clickable="true"
+            android:id="@+id/privacy_policy"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/privacy"/>
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Privacy Policy"
+                    android:textSize="20dp"
+                    android:layout_gravity="center_vertical"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+
+
+
+
+</RelativeLayout>

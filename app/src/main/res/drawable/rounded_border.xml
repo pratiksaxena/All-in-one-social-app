@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    // The width and color of the border
+    <stroke
+        android:width=".5dp"
+        android:color="#D3D3D3" />
+
+    // The desired corner radius. reduce it to keep it less rounded
+
+
+
+</shape>
