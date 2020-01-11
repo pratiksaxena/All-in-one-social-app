@@ -34,7 +34,7 @@ public class WebViewFragment extends Fragment {
         String url = null;
 
         if(pageId == 2){
-            url = "https://m.facebook.com/messages/?_rdr";
+            url = "https://www.messenger.com/login/";
         }else if (pageId == 3){
             url  = "https://m.facebook.com/friends/center/requests/?rfj&no_hist=1";
         }else if (pageId == 4){

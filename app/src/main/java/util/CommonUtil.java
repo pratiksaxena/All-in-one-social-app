@@ -5,6 +5,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+import java.lang.reflect.Type;
 
 public class CommonUtil {
 

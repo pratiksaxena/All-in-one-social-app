@@ -1,6 +1,7 @@
 package com.allinonesocialapp.android.view;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,7 +9,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
@@ -30,11 +30,18 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.allinonesocialapp.android.R;
-import com.facebook.shimmer.Shimmer;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -46,7 +53,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import adapter.SocialAppsAdapter;
@@ -88,6 +94,14 @@ public class HomeActivity extends AppCompatActivity {
 
     //SwipeRefreshLayout swipeRefreshLayout;
 
+    private AdView mAdView;
+    private AdView mAdView2;
+    boolean isPausedCalled  = false;
+
+    boolean isBackPressed = false;
+    private InterstitialAd backInterstitialAd;
+    private InterstitialAd webViewInterstitialAd;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,8 +124,135 @@ public class HomeActivity extends AppCompatActivity {
             }
         };
 
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+
+                Log.d("LOG", initializationStatus.toString());
+            }
+        });
 
 
+        setUpBannerAd1();
+        setUpBackInterstialAds();
+        setUpWebViewIntertialAds();
+        setUpBottomAds();
+
+    }
+
+    public void setUpBannerAd1(){
+        mAdView = findViewById(R.id.adView1);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        mAdView.setAdListener(new AdListener(){
+
+            @Override
+            public void onAdLoaded() {
+                mAdView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAdFailedToLoad(int error) {
+                mAdView.setVisibility(View.GONE);
+            }
+
+        });
+    }
+
+    /*
+     * Not being used right now
+     */
+    public void setUpBannerAd2(){
+        mAdView2 = findViewById(R.id.adView2);
+        AdRequest adRequest1 = new AdRequest.Builder().build();
+        mAdView2.loadAd(adRequest1);
+
+        mAdView2.setAdListener(new AdListener(){
+
+            @Override
+            public void onAdLoaded() {
+                mAdView2.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAdFailedToLoad(int error) {
+                mAdView2.setVisibility(View.GONE);
+            }
+
+        });
+    }
+
+    public void setUpWebViewIntertialAds(){
+
+        webViewInterstitialAd = new InterstitialAd(this);
+        webViewInterstitialAd.setAdUnitId("ca-app-pub-5550326882103592/8938922458");
+        webViewInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+    }
+
+    public void setUpBackInterstialAds(){
+
+        backInterstitialAd = new InterstitialAd(this);
+        backInterstitialAd.setAdUnitId("ca-app-pub-5550326882103592/4808105755");
+        backInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+    }
+
+    public void setUpBottomAds(){
+        AdView mAdView = findViewById(R.id.bottomAd);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if(!isBackPressed){
+            isBackPressed = true;
+            if(backInterstitialAd.isLoaded()) {
+                // show ad
+                backInterstitialAd.show();
+                setUpBackInterstialAds();
+            }else{
+                super.onBackPressed();
+            }
+        }else {
+            super.onBackPressed();
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 1){
+            // show ad code
+            if(webViewInterstitialAd.isLoaded()){
+                webViewInterstitialAd.show();
+                setUpWebViewIntertialAds();
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isBackPressed = false;
+        if(isPausedCalled){
+            installedSocialApps = getUsageStats(installedSocialApps);
+            installedAppAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isPausedCalled = true;
     }
 
     private void setUpApplication(ArrayList<SocialAppDTO> appList) {
@@ -155,9 +296,12 @@ public class HomeActivity extends AppCompatActivity {
 
 
         //swipeRefreshLayout.setRefreshing(true);
+
         mShimmerViewContainer.startShimmer();
 
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
                 db.collection("socialApps")
                         .get()
 
@@ -263,6 +407,33 @@ public class HomeActivity extends AppCompatActivity {
 //            apps.addAll(subList);
 //        }
 
+        apps = getUsageStats(apps);
+
+        recyclerView = (RecyclerView) findViewById(R.id.app_container);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new GridLayoutManager(this, 4);
+
+        installedAppAdapter = new SocialAppsAdapter(apps, getBaseContext());
+
+        recyclerView.setAdapter(installedAppAdapter);
+        recyclerView.addItemDecoration(new RecyclerViewMargin(50, 4));
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setNestedScrollingEnabled(false);
+
+        findViewById(R.id.usageAnalysis).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(),  UsageStatsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("appList", appList);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private ArrayList<SocialApp> getUsageStats(ArrayList<SocialApp> apps) {
         AppOpsManager appOps = (AppOpsManager)
                 getSystemService(Context.APP_OPS_SERVICE);
         int mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
@@ -288,29 +459,7 @@ public class HomeActivity extends AppCompatActivity {
             apps = getInstalledAppList(apps, statsMap);
 
         }
-
-        recyclerView = (RecyclerView) findViewById(R.id.app_container);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new GridLayoutManager(this, 4);
-
-        installedAppAdapter = new SocialAppsAdapter(apps, getBaseContext());
-
-        recyclerView.setAdapter(installedAppAdapter);
-        recyclerView.addItemDecoration(new RecyclerViewMargin(10, 4));
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setNestedScrollingEnabled(false);
-
-        findViewById(R.id.usageAnalysis).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(),  UsageStatsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("appList", appList);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-        });
+        return apps;
     }
 
     private ArrayList<SocialApp> getInstalledAppList(ArrayList<SocialApp> appList, Map<String, UsageStats> stats){
@@ -372,10 +521,10 @@ public class HomeActivity extends AppCompatActivity {
 
         layoutManager = new GridLayoutManager(this, 4);
 
-        exploreAppAdapter = new SocialAppsAdapter(apps, getBaseContext());
+        exploreAppAdapter = new SocialAppsAdapter(apps, this);
 
         recyclerView1.setAdapter(exploreAppAdapter);
-        recyclerView1.addItemDecoration(new RecyclerViewMargin(20, 4));
+        recyclerView1.addItemDecoration(new RecyclerViewMargin(50, 4));
         recyclerView1.setLayoutManager(layoutManager);
         recyclerView1.setNestedScrollingEnabled(false);
     }
@@ -457,37 +606,45 @@ public class HomeActivity extends AppCompatActivity {
     void setUpFacebookSection(){
 
         feedLayout = (LinearLayout)findViewById(R.id.feed);
-        friendsLayout = (LinearLayout)findViewById(R.id.friends);
         messageLayout = (LinearLayout)findViewById(R.id.message);
-        searchLayout = (LinearLayout)findViewById(R.id.search);
 
         feedLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openPagerActivity(1);
+                //openPagerActivity(1);
+                Intent intent = new Intent(getBaseContext(), WebViewActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("webUrl", "https://m.facebook.com/home.php");
+                intent.putExtra("webName", "Facebook");
+                startActivity(intent);
             }
         });
 
         messageLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openPagerActivity(2);
+                //openPagerActivity(2);
+                Intent intent = new Intent(getBaseContext(), WebViewActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("webUrl", "https://www.messenger.com/login/");
+                intent.putExtra("webName", "Facebook");
+                startActivity(intent);
             }
         });
 
-        friendsLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openPagerActivity(3);
-            }
-        });
-
-        searchLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openPagerActivity(4);
-            }
-        });
+//        friendsLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                openPagerActivity(3);
+//            }
+//        });
+//
+//        searchLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                openPagerActivity(4);
+//            }
+//        });
 
     }
 

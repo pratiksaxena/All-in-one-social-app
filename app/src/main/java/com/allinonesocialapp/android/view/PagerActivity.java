@@ -18,10 +18,8 @@ public class PagerActivity extends AppCompatActivity {
     private ViewPager viewPager;
 
     private int[] tabIcons = {
-            R.drawable.feed,
-            R.drawable.message,
-            R.drawable.friends,
-            R.drawable.search
+            R.drawable.fb,
+            R.drawable.message
     };
 
     @Override
@@ -33,16 +31,16 @@ public class PagerActivity extends AppCompatActivity {
         adapter = new TabAdapter(getSupportFragmentManager());
         adapter.addFragment(new WebViewFragment(1), "Tab 1");
         adapter.addFragment(new WebViewFragment(2), "Tab 2");
-        adapter.addFragment(new WebViewFragment(3), "Tab 3");
-        adapter.addFragment(new WebViewFragment(4), "Tab 4");
+//        adapter.addFragment(new WebViewFragment(3), "Tab 3");
+//        adapter.addFragment(new WebViewFragment(4), "Tab 4");
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(1);
         tabLayout.setupWithViewPager(viewPager);
 
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
+//        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+//        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
 
         if(getIntent().getStringExtra("pageId") != null){
             int pageId = Integer.parseInt(getIntent().getStringExtra("pageId"));

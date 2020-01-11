@@ -5,6 +5,8 @@ buildscript {
         google()
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
+        maven { url 'http://maven.calldorado.com/nexus/content/repositories/thirdparty/' }
+        maven { url 'http://maven.calldorado.com/nexus/content/repositories/releases' }
         
     }
     dependencies {

@@ -4,6 +4,8 @@
     package="com.allinonesocialapp.android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG"
+        tools:node="remove"/>
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
@@ -16,6 +18,18 @@
         android:supportsRtl="true"
         android:theme="@style/MyAppTheme"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5550326882103592~9659191349"/>
+
+        <meta-data android:name="com.calldorado.AccountId" android:value="a1-ae4278ba-1337-4761-83f8-d6e612075959"/>
+        <meta-data android:name="com.calldorado.AppId" android:value="b0-ad45c5a4-3960-4a8f-8fd5-5a39e0a383d7"/>
+
+        <meta-data
+            android:name="com.calldorado.LocalOptin"
+            android:value="enable"/>
+
         <activity android:name="com.allinonesocialapp.android.view.UsageStatsActivity"
             android:screenOrientation="portrait">
         </activity>

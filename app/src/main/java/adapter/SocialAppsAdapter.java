@@ -1,5 +1,6 @@
 package adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -111,6 +112,8 @@ public class SocialAppsAdapter extends RecyclerView.Adapter<SocialAppsAdapter.So
 
             holder.useCount.setText(socialApp.useCount + "X (" + (int) Math.round(percent) + "%)");
 
+            holder.useCount.setVisibility(View.VISIBLE);
+
             StringJoiner joiner = new StringJoiner(" ");
 
             if(socialApp.duration != 0){
@@ -184,10 +187,10 @@ public class SocialAppsAdapter extends RecyclerView.Adapter<SocialAppsAdapter.So
                         context.startActivity(launchIntent);
                     }else{
                         Intent intent = new Intent(context, WebViewActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra("webUrl", socialApp.webUrl);
                         intent.putExtra("webName", socialApp.displayName);
-                        context.startActivity(intent);
+                        ((Activity)context).startActivityForResult(intent, 1);
                     }
 
                 }
