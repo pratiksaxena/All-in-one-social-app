@@ -9,5 +9,6 @@
         android:title="Rate"/>
     <item android:id="@+id/about"
         android:title="About"/>
-
+    <item android:id="@+id/settings"
+        android:title="Settings"/>
 </menu>

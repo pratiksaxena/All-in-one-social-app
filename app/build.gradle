@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.allinonesocialapp.android"
+        applicationId "messenger.people.messenger"
         minSdkVersion 24
-        targetSdkVersion 26
-        versionCode 3
-        versionName "1.1.1"
+        targetSdkVersion 28
+        versionCode 4
+        versionName "2.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -17,6 +17,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        targetCompatibility = 1.8
+        sourceCompatibility = 1.8
     }
 }
 
@@ -39,10 +43,32 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:18.3.0'
     implementation 'com.google.firebase:firebase-database:19.2.0'
 
+    implementation 'com.android.volley:volley:1.1.1'
 
 
 }
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+repositories {
+    google()
+    maven { url 'http://maven.calldorado.com/nexus/content/repositories/thirdparty/' }
+    maven { url 'http://maven.calldorado.com/nexus/content/repositories/releases' }
+}
+dependencies {
+    implementation('com.calldorado:calldorado-release:5.9.55.2130@aar') {
+        transitive = true
+    }
+}
 
 
 apply plugin: 'com.google.gms.google-services'
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:+'
+    implementation 'androidx.constraintlayout:constraintlayout:+'
+    implementation 'com.google.android.material:material:+'
+}

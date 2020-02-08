@@ -37,9 +37,67 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:499960613643:android:ecacc211399755131d300e",
+        "android_client_info": {
+          "package_name": "com.android.allinoneshoppingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499960613643-v6799kfd389cdc6v70n4dosphqhk6e6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjwRmYaQff7MXIg-yYuXTjKOCbf8v2cTs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499960613643-v6799kfd389cdc6v70n4dosphqhk6e6b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:499960613643:android:cccc624b81c774a01d300e",
         "android_client_info": {
           "package_name": "com.example.allinoneshoppingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499960613643-v6799kfd389cdc6v70n4dosphqhk6e6b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjwRmYaQff7MXIg-yYuXTjKOCbf8v2cTs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499960613643-v6799kfd389cdc6v70n4dosphqhk6e6b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499960613643:android:d5da72b0daa435d31d300e",
+        "android_client_info": {
+          "package_name": "messenger.people.messenger"
         }
       },
       "oauth_client": [

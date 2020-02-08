@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Text Messenger App </string>
+    <string name = "calldorado_1">Text Messenger App provides free Caller ID</string>
+    <string name = "calldorado_2">Prepare yourself for incoming calls and avoid spam callers with Text Messenger\'s high quality Caller ID.</string>
+    <string name = "calldorado_3">We respect your privacy and your needs, nothing is recorded and you can customize or configure the Caller ID in settings.</string>
+    <string name = "calldorado_4">Location information allows us to provide you with an enhanced experience. For the best possible experince we ask that set your
+        permission to \"Always Allow\". As part of that permission we share that precise location information with Cuebig and its partners for the purpose of tailored
+        advertising, attribution, attribution and reasearch.</string>
+    <string name="get_started_text">By clicking \'Get Started\' you agree to the Caller ID End User License Aggrement and Privacy Policy</string>
 </resources>
+
