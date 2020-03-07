@@ -250,6 +250,14 @@
 
                 </LinearLayout>
 
+                <messenger.people.messenger.ad.TemplateView
+                    android:visibility="gone"
+                    android:id="@+id/adview1"
+                    android:layout_marginTop="20dp"
+                    app:gnt_template_type="@layout/gnt_small_template_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
                 <com.google.android.gms.ads.AdView
                     xmlns:ads="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/adView1"
@@ -333,16 +341,16 @@
 
                 </LinearLayout>
 
-                <com.google.android.gms.ads.AdView
-                    xmlns:ads="http://schemas.android.com/apk/res-auto"
-                    android:id="@+id/adView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                <messenger.people.messenger.ad.TemplateView
+                    android:visibility="gone"
+                    android:id="@+id/adview2"
                     android:layout_marginTop="20dp"
-                    ads:adSize="SMART_BANNER"
-                    android:visibility="visible"
-                    ads:adUnitId="ca-app-pub-5550326882103592/8223509102">
-                </com.google.android.gms.ads.AdView>
+                    android:layout_marginBottom="110dp"
+                    app:gnt_template_type="@layout/gnt_small_template_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+
 
             </LinearLayout>
 

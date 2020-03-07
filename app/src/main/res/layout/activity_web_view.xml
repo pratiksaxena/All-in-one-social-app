@@ -12,6 +12,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"/>
 
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:id="@+id/progress"
+        android:layout_below="@id/toolbarTop"
+        android:max="100"
+        android:elevation="2dp"
+        android:background="#EEF0F1"
+        android:progress="45"/>
+
     <WebView
         android:id="@+id/webview"
         android:layout_below="@id/toolbarTop"

@@ -6,11 +6,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.os.ConfigurationCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
+import android.Manifest;
 import android.app.AppOpsManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -18,8 +20,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,6 +35,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,21 +52,17 @@ import com.android.volley.toolbox.Volley;
 import com.calldorado.Calldorado;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Field;
@@ -67,11 +70,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import messenger.people.messenger.ad.NativeTemplateStyle;
+import messenger.people.messenger.ad.TemplateView;
 import messenger.people.messenger.adapter.SocialAppsAdapter;
+import messenger.people.messenger.manager.PreferenceKeeper;
 import messenger.people.messenger.model.SocialApp;
 import messenger.people.messenger.model.SocialAppDTO;
 import messenger.people.messenger.util.CommonUtil;
@@ -129,52 +136,40 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_home);
+
         configureToolbar();
         setUpDrawer();
-        Calldorado.startCalldorado(this);
+//        Calldorado.startCalldorado(this);
 
-        Calldorado.requestOverlayPermission(this, new Calldorado.CalldoradoOverlayCallback() {
-            @Override
-            public void onPermissionFeedback(boolean overlayIsGranted) {
+//        if(!PreferenceKeeper.isOverlayShown()) {
+//            PreferenceKeeper.setOverlayShown(true);
+//            Calldorado.requestOverlayPermission(this, new Calldorado.CalldoradoOverlayCallback() {
+//                @Override
+//                public void onPermissionFeedback(boolean overlayIsGranted) {
+//
+//                }
+//            });
+//        }
 
-                Toast.makeText(getBaseContext(), "overlay " + overlayIsGranted , Toast.LENGTH_LONG).show();
-            }
-        });
+        initializeApp();
 
-        final PackageManager pm = getPackageManager();
+        setUpGoogleEt();
 
-        //get a list of installed apps.
-        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        setupAds();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    }
 
-                for (ApplicationInfo packageInfo : packages) {
+    private void initializeApp() {
 
-                    SocialApp s = new SocialApp(null, pm.getApplicationIcon(packageInfo), packageInfo.loadLabel(pm).toString(), null, packageInfo.packageName, false);
-                    socialMap.put(s.packageName, s);
-                }
-
-                isAppFilteringDone = true;
-
-                if(isDataFetchedFromFirebase){
-                    Message uisetup = new Message();
-                    uisetup.what = 1;
-                    handler.dispatchMessage(uisetup);
-                }
-            }
-        }).start();
-
-
-        //swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeLayout);
         mShimmerViewContainer = findViewById(R.id.shimmer_view_container);
+
         getDataFromFirebase();
 
         handler = new Handler(getMainLooper()){
             @Override
             public void handleMessage(@NonNull Message msg) {
                 if(msg.what == 1){
+
                     setUpApplication(firebaseApps);
 
                     runOnUiThread(new Runnable() {
@@ -185,7 +180,6 @@ public class HomeActivity extends AppCompatActivity {
                             findViewById(R.id.segment_one).setVisibility(View.VISIBLE);
                             findViewById(R.id.segment_two).setVisibility(View.VISIBLE);
                             findViewById(R.id.segment_three).setVisibility(View.VISIBLE);
-
                         }
                     });
 
@@ -193,6 +187,9 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    private void setupAds(){
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -206,7 +203,72 @@ public class HomeActivity extends AppCompatActivity {
         setUpBackInterstialAds();
         setUpWebViewIntertialAds();
         setUpBottomAds();
-        setUpGoogleEt();
+        setUpNativeAds();
+
+    }
+
+    private PackageInfo getPackage(String packageName, PackageManager packageManager) {
+        try {
+            return packageManager.getPackageInfo(packageName, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
+    }
+
+    private void setUpNativeAds() {
+
+        AdLoader adLoader1 = new AdLoader.Builder(this, "ca-app-pub-5550326882103592/5275432047")
+                .forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                    @Override
+                    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+
+                        NativeTemplateStyle styles = new
+                                NativeTemplateStyle.Builder().build();
+                        TemplateView adView = findViewById(R.id.adview1);
+                        adView.setVisibility(View.VISIBLE);
+                        adView.setStyles(styles);
+                        adView.setNativeAd(unifiedNativeAd);
+
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        .build())
+                .build();
+
+        adLoader1.loadAd(new AdRequest.Builder().build());
+
+        AdLoader adLoader2 = new AdLoader.Builder(this, "ca-app-pub-5550326882103592/3641079885")
+                .forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                    @Override
+                    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+
+                        NativeTemplateStyle styles = new
+                                NativeTemplateStyle.Builder().build();
+                        TemplateView adView = findViewById(R.id.adview2);
+                        adView.setVisibility(View.VISIBLE);
+                        adView.setStyles(styles);
+                        adView.setNativeAd(unifiedNativeAd);
+
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        .build())
+                .build();
+
+        adLoader2.loadAd(new AdRequest.Builder().build());
+
 
     }
 
@@ -254,23 +316,23 @@ public class HomeActivity extends AppCompatActivity {
      * Not being used right now
      */
     public void setUpBannerAd2(){
-        mAdView2 = findViewById(R.id.adView2);
-        AdRequest adRequest1 = new AdRequest.Builder().build();
-        mAdView2.loadAd(adRequest1);
-
-        mAdView2.setAdListener(new AdListener(){
-
-            @Override
-            public void onAdLoaded() {
-                mAdView2.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAdFailedToLoad(int error) {
-                mAdView2.setVisibility(View.GONE);
-            }
-
-        });
+//        mAdView2 = findViewById(R.id.adView2);
+//        AdRequest adRequest1 = new AdRequest.Builder().build();
+//        mAdView2.loadAd(adRequest1);
+//
+//        mAdView2.setAdListener(new AdListener(){
+//
+//            @Override
+//            public void onAdLoaded() {
+//                mAdView2.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onAdFailedToLoad(int error) {
+//                mAdView2.setVisibility(View.GONE);
+//            }
+//
+//        });
     }
 
     public void setUpWebViewIntertialAds(){
@@ -353,16 +415,15 @@ public class HomeActivity extends AppCompatActivity {
 
         getMasterAppList(appList);
 
-
-
         final PackageManager pm = getPackageManager();
 
         for(SocialApp socialApp : socialAppList){
-            if(socialMap.get(socialApp.packageName) != null){
-                SocialApp app = socialMap.get(socialApp.packageName);
-                app.imageUrl = socialApp.imageUrl;
-                app.isInstalled = true;
-                installedSocialApps.add(app);
+
+            PackageInfo packageInfo = getPackage(socialApp.packageName, pm);
+            if(packageInfo != null){
+                socialApp.isInstalled = true;
+                socialApp.imageDrawable = pm.getApplicationIcon(packageInfo.applicationInfo);
+                installedSocialApps.add(socialApp);
             }else if(socialApp.webUrl != null){
                 absentSocialApps.add(socialApp);
             }
@@ -399,14 +460,10 @@ public class HomeActivity extends AppCompatActivity {
 
                         firebaseApps = appList;
 
-                        isDataFetchedFromFirebase = true;
-
-                        if(isAppFilteringDone){
-                            Message uisetup = new Message();
-                            uisetup.what = 1;
-                            uisetup.obj = appList;
-                            handler.dispatchMessage(uisetup);
-                        }
+                        Message uisetup = new Message();
+                        uisetup.what = 1;
+                        uisetup.obj = appList;
+                        handler.dispatchMessage(uisetup);
 
                     }
                 }, new Response.ErrorListener() {
@@ -418,50 +475,6 @@ public class HomeActivity extends AppCompatActivity {
 
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
-
-
-
-
-
-
-
-
-
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//
-//        final DocumentReference docRef = db.collection("socialApps").document();
-//
-//        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        final DatabaseReference ref = database.getReference();
-//
-//        db.collection("socialApps").addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-//
-//                if (documentSnapshot != null && documentSnapshot.getDocuments() != null) {
-//                    for (DocumentSnapshot document : documentSnapshot.getDocuments()) {
-//                        appList.add(CommonUtil.fromJson(CommonUtil.getJson(document.getData()), SocialAppDTO.class));
-//                    }
-//
-//                    DatabaseReference usersRef = ref.child("test");
-//
-//                    for(SocialAppDTO app : appList){
-//
-//                    }
-//
-//
-//                    Message uisetup = new Message();
-//                    uisetup.what = 1;
-//                    uisetup.obj = appList;
-//                    handler.dispatchMessage(uisetup);
-//
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
-
     }
 
     private void configureToolbar() {
@@ -510,12 +523,6 @@ public class HomeActivity extends AppCompatActivity {
         if(apps == null || apps.size() == 0){
             findViewById(R.id.segment_one).setVisibility(View.GONE);
         }
-
-//        if(apps.size() > 8){
-//            List<SocialApp> subList = apps.subList(0, 8);
-//            apps.clear();
-//            apps.addAll(subList);
-//        }
 
         apps = getUsageStats(apps);
 
@@ -580,9 +587,7 @@ public class HomeActivity extends AppCompatActivity {
 
         for(SocialApp socialApp : appList){
 
-            if(socialMap.get(socialApp.packageName) != null){
-
-                if(stats != null && stats.containsKey(socialApp.packageName)){
+                if(socialApp.isInstalled && stats != null && stats.containsKey(socialApp.packageName)){
                     try{
                         Field mLaunchCount = UsageStats.class.getDeclaredField("mLaunchCount");
                         Field mTotalTimeInForeground = UsageStats.class.getDeclaredField("mTotalTimeInForeground");
@@ -593,10 +598,7 @@ public class HomeActivity extends AppCompatActivity {
                     }catch (Exception e){
                         Log.d("error", e.getMessage());
                     }
-
                 }
-
-            }
         }
 
         return appList;

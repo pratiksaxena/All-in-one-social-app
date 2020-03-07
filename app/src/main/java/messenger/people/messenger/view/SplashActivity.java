@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 
 import messenger.people.messenger.R;
 
@@ -36,7 +37,7 @@ public class SplashActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash);
 
-        Map<Calldorado.Condition, Boolean> cdoConditions = Calldorado.getAcceptedConditions(this);
+        //Map<Calldorado.Condition, Boolean> cdoConditions = Calldorado.getAcceptedConditions(this);
 
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-5550326882103592/1175028210");
@@ -85,7 +86,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 try {
 
-                    if (cdoConditions.containsKey(Calldorado.Condition.EULA) && cdoConditions.get(Calldorado.Condition.EULA)) {
+                    //if (cdoConditions.containsKey(Calldorado.Condition.EULA) && cdoConditions.get(Calldorado.Condition.EULA)) {
 
                         if(mInterstitialAd.isLoaded()){
                             mInterstitialAd.show();
@@ -96,11 +97,11 @@ public class SplashActivity extends AppCompatActivity {
                         }
 
 
-                    }else{
-                        Intent intent = new Intent(getApplicationContext(), CalldoRadoActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
+//                    }else{
+//                        Intent intent = new Intent(getApplicationContext(), CalldoRadoActivity.class);
+//                        startActivity(intent);
+//                        finish();
+//                    }
 
 
 
